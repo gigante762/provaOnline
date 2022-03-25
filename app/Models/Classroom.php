@@ -33,4 +33,15 @@ class Classroom extends Model
         $this->students()->attach($students);
         
     }
+
+
+    /**
+     * Receive an email and remove this students from the classroom
+     */
+    public function unAssingStudents(string $studentsEmail)
+    {
+        $student = \App\Models\User::where('email', $studentsEmail)->first();
+        
+        $this->students()->detach($student);   
+    }
 }

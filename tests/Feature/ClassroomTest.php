@@ -36,7 +36,7 @@ class ClassroomTest extends TestCase
     /**
      * @depens test_teacher_can_create_classroms
      */
-    public function test_create_classroom_from_user()   
+    public function test_create_classroom_from_user()
     {
         $user = \App\Models\User::factory()->create();
 
@@ -64,10 +64,23 @@ class ClassroomTest extends TestCase
         $classroom->assingStudents($studentsEmails);
 
         $this->assertEquals(3, $classroom->students()->count());
+    } 
 
-    }
+    /**
+     * @depens test_teacher_can_assing_students_to_classroom
+     */
+    public function test_teacher_can_remove_students_from_classroom()
+    {
+        $userTeacher = \App\Models\User::factory()->create(['role' => 'teacher']);
 
-    
+        $classroom = \App\Models\Classroom::factory()->create([
+            'user_id' => $userTeacher->id
+        ]);
+        
+        $studentEmail = \App\Models\User::factory()->create()->email;
+        
+        $classroom->unAssingStudents($studentEmail);
 
-    
+        $this->assertEquals(0, $classroom->students()->count());
+    } 
 }
