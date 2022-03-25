@@ -47,6 +47,26 @@ class ClassroomTest extends TestCase
         $this->assertDatabaseCount('classrooms', 1);
     }
 
+
+    public function test_teacher_can_assing_students_to_classroom()
+    {
+        $userTeacher = \App\Models\User::factory()->create(['role' => 'teacher']);
+
+        $classroom = \App\Models\Classroom::factory()->create([
+            'user_id' => $userTeacher->id
+        ]);
+        
+        $studentsEmails = [];
+        $studentsEmails[] = \App\Models\User::factory()->create()->email;
+        $studentsEmails[] = \App\Models\User::factory()->create()->email;
+        $studentsEmails[] = \App\Models\User::factory()->create()->email;
+        
+        $classroom->assingStudents($studentsEmails);
+
+        $this->assertEquals(3, $classroom->students()->count());
+
+    }
+
     
 
     
