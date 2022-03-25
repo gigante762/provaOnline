@@ -10,7 +10,7 @@ class ClassroomTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_students_cant_create_exams()
+    public function test_students_cant_create_classroms()
     {
         $userStudent = \App\Models\User::factory()->create();
         
@@ -21,7 +21,7 @@ class ClassroomTest extends TestCase
         ])->assertForbidden();
     }
 
-    public function test_teacher_can_create_classrooms()
+    public function test_teacher_can_create_classroms()
     {
         $userTeacher = \App\Models\User::factory()->create(['role' => 'teacher']);
 
@@ -33,8 +33,9 @@ class ClassroomTest extends TestCase
 
     }
 
-    
-
+    /**
+     * @depens test_teacher_can_create_classroms
+     */
     public function test_create_classroom_from_user()   
     {
         $user = \App\Models\User::factory()->create();
@@ -46,16 +47,7 @@ class ClassroomTest extends TestCase
         $this->assertDatabaseCount('classrooms', 1);
     }
 
-    public function test_create_exam_from_user()   
-    {
-        $user = \App\Models\User::factory()->create();
-
-        \App\Models\Exam::factory()->create([
-            'user_id' => $user->id
-        ]);
-
-        $this->assertDatabaseCount('exams', 1);
-    }
+    
 
     
 }

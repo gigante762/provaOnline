@@ -1,6 +1,10 @@
 <?php
 
-use App\Http\Controllers\ClassRoomController;
+use App\Http\Controllers\{
+    ClassRoomController,
+    ExamController
+};
+
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,4 +22,5 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::resource('classrooms',ClassRoomController::class);
+Route::resource('classrooms', ClassRoomController::class);
+Route::resource('exams', ExamController::class);
