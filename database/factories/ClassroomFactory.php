@@ -14,7 +14,7 @@ class ClassroomFactory extends Factory
     public function definition()
     {
         return [
-            'name' => 'Class'. rand(''),
+            'name' => 'Class'. rand(1,1000),
             'user_id' => 1
 
         ];
