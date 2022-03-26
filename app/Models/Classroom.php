@@ -23,12 +23,18 @@ class Classroom extends Model
 
     /**
      * Receive an email's array and add these students into the classroom
+     * @param String|Array $studentsEmail
      */
-    public function assingStudents(array $studentsEmail)
+    public function assingStudents($studentsEmail)
     {
-
-        $students = \App\Models\User::whereIn('email', $studentsEmail)->get();
-        
+        if (gettype($studentsEmail) == 'array')
+        {
+            $students = \App\Models\User::whereIn('email', $studentsEmail)->get();
+        }
+        else
+        {
+            $students = \App\Models\User::where('email', $studentsEmail)->first();
+        }
 
         $this->students()->attach($students);
         
