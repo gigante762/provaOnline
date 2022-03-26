@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Jobs\AssingExamToClassroom;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Bus;
 use Tests\TestCase;
 
 class ExamTest extends TestCase
@@ -40,16 +42,100 @@ class ExamTest extends TestCase
     }
 
     /**
-     * @depens test_teacher_can_create_exams
+     * @depens test_teacher_can_create_exams_from_post
      */
     public function test_create_exam_from_user()   
     {
-        $user = \App\Models\User::factory()->create();
+        $user = \App\Models\User::factory()
+        ->has(\App\Models\Exam::factory()->count(3))
+        ->create();
 
-        \App\Models\Exam::factory()->create([
-            'user_id' => $user->id
+        $this->assertEquals(3, $user->exams()->count());
+        $this->assertDatabaseCount('exams', 3);
+    }
+
+    public function test_dispatch_assing_exam_to_classroom_job()   
+    {
+        Bus::fake();
+
+        $teacher = \App\Models\User::factory()
+        ->has(\App\Models\Exam::factory())
+        ->has(\App\Models\Classroom::factory())
+        ->create(['role'=>'teacher']);
+
+        $exam = $teacher->exams()->first();
+
+        $classroom = $teacher->classrooms()->first();
+
+        $studentsEmails = [];
+        $studentsEmails[] = \App\Models\User::factory()->create()->email;
+        $studentsEmails[] = \App\Models\User::factory()->create()->email;
+        $studentsEmails[] = \App\Models\User::factory()->create()->email;
+
+        
+        $classroom->assingStudents($studentsEmails);
+        
+        $teacher->applyExamToClassroom($exam, $classroom);
+
+        Bus::assertDispatched(AssingExamToClassroom::class);
+
+    }
+
+    public function test_students_received_exam_to_do()   
+    {
+        $teacher = \App\Models\User::factory()
+        ->has(\App\Models\Exam::factory())
+        ->has(\App\Models\Classroom::factory())
+        ->create(['role'=>'teacher']);
+
+        $exam = $teacher->exams()->first();
+
+        $classroom = $teacher->classrooms()->first();
+
+        $studentsEmails = [];
+        $studentsEmails[] = \App\Models\User::factory()->create()->email;
+        $studentsEmails[] = \App\Models\User::factory()->create()->email;
+        $studentsEmails[] = \App\Models\User::factory()->create()->email;
+
+        
+        $classroom->assingStudents($studentsEmails);
+        
+        $teacher->applyExamToClassroom($exam, $classroom);
+
+        $studentExemple = \App\Models\User::where('email', $studentsEmails[0])->first();
+
+        $this->assertDatabaseHas('exam_user', [
+            'user_id'  => $studentExemple->id,
+            'exam_id' => $exam->id,
         ]);
 
-        $this->assertDatabaseCount('exams', 1);
+        $this->assertDatabaseCount('exam_user', 3);
+    }
+
+    public function test_student_exam_have_uuid()   
+    {
+        $teacher = \App\Models\User::factory()
+        ->has(\App\Models\Exam::factory())
+        ->has(\App\Models\Classroom::factory())
+        ->create(['role'=>'teacher']);
+
+        $exam = $teacher->exams()->first();
+
+        $classroom = $teacher->classrooms()->first();
+     
+        $student = \App\Models\User::factory()->create();
+        
+        $classroom->assingStudents($student->email);
+        
+        $teacher->applyExamToClassroom($exam, $classroom);
+
+        $this->assertDatabaseHas('exam_user', [
+            'user_id'  => $student->id,
+            'exam_id' => $exam->id,
+        ]);
+
+        $this->assertEquals(1, $student->examsAvailables()->count());
+
+        $this->assertNotEmpty($student->examsAvailables()->first()->pivot->uuid, 'exam_user uuid is null');
     }
 }

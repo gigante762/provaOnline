@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Jobs\AssingExamToClassroom;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
 
 class User extends Authenticatable
 {
@@ -50,7 +52,13 @@ class User extends Authenticatable
 
     public function examsAvailables()
     {
-        return $this->belongsToMany(Exam::class);
+        return $this->belongsToMany(Exam::class)
+        ->withPivot('answers', 'opened_at', 'closed_at', 'uuid');
+    }
+
+    public function applyExamToClassroom(Exam $exam, Classroom $classroom)
+    {
+        AssingExamToClassroom::dispatch($exam, $classroom);
     }
 
     
