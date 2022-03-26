@@ -33,7 +33,7 @@ Route::prefix('/classrooms')->group(function(){
     Route::post('/{classroom}/assingstudent', [ClassRoomController::class, 'assingStudent'])
     ->name('classrooms.assingstudent')->can('update', 'classroom');
 
-    Route::delete('/classrooms/{classroom}/assingstudent', [ClassRoomController::class, 'unassingStudent'])
+    Route::delete('/{classroom}/assingstudent', [ClassRoomController::class, 'unassingStudent'])
     ->name('classrooms.unassingstudent')->can('update', 'classroom');
 });
 

@@ -44,7 +44,6 @@ class ExamPolicy
     public function viewExam(User $user, Exam $exam)
     {
 
-        
         return $exam->user_id == $user->id || $user->examsAvailables->contains(function ($value, $key) use ($exam) {
             return $value->exam_id = $exam->id;
         });
