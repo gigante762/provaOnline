@@ -31,3 +31,4 @@ Route::delete('/classrooms/{classroom}/assingstudent', [ClassRoomController::cla
 ->name('classrooms.unassingstudent')->can('update', 'classroom');
 
 Route::resource('exams', ExamController::class);
+

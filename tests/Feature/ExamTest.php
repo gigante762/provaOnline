@@ -10,7 +10,7 @@ class ExamTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_students_cant_create_exams()
+    public function test_students_cant_create_exams_from_post()
     {
         $userStudent = \App\Models\User::factory()->create();
         
@@ -24,7 +24,7 @@ class ExamTest extends TestCase
         ])->assertForbidden();
     }
 
-    public function test_teacher_can_create_exams()
+    public function test_teacher_can_create_exams_from_post()
     {
         $userTeacher = \App\Models\User::factory()->create(['role' => 'teacher']);
 
