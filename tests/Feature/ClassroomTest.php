@@ -82,5 +82,90 @@ class ClassroomTest extends TestCase
         $classroom->unAssingStudents($studentEmail);
 
         $this->assertEquals(0, $classroom->students()->count());
-    } 
+    }
+
+    
+    public function test_teacher_cant_assing_students_to_a_non_own_classroom()
+    {
+        $userTeacher = \App\Models\User::factory()->create(['role' => 'teacher']);
+
+        $classroom = \App\Models\Classroom::factory()->create([
+            'user_id' => $userTeacher->id
+        ]);
+
+        $userTeacher2 = \App\Models\User::factory()->create(['role' => 'teacher']);
+
+        $studentEmail = \App\Models\User::factory()->create()->email;
+
+        $this->actingAs($userTeacher2)
+        ->post(route('classrooms.assingstudent',$classroom->id),[
+            'student_email' => $studentEmail
+        ])->assertForbidden();
+
+        $this->assertEquals(0, $classroom->students()->count());
+    }
+
+    public function test_teacher_assing_students_to_a_own_classroom()
+    {
+        $userTeacher = \App\Models\User::factory()->create(['role' => 'teacher']);
+
+        $classroom = \App\Models\Classroom::factory()->create([
+            'user_id' => $userTeacher->id
+        ]);
+
+        $studentEmail = \App\Models\User::factory()->create()->email;
+
+        $this->actingAs($userTeacher)
+        ->post(route('classrooms.assingstudent', $classroom->id),[
+            'student_email' => $studentEmail
+        ])->assertOk();
+
+        $this->assertEquals(1, $classroom->students()->count());
+    }
+
+    /**
+     * @depens test_teacher_assing_students_to_a_own_classroom
+     */
+    public function test_teacher_cant_unassing_students_to_a_non_own_classroom()
+    {
+        $userTeacher = \App\Models\User::factory()->create(['role' => 'teacher']);
+
+        $classroom = \App\Models\Classroom::factory()->create([
+            'user_id' => $userTeacher->id
+        ]);
+
+        $studentEmail = \App\Models\User::factory()->create()->email;
+
+        $classroom->assingStudents([$studentEmail]);
+
+        $userTeacher2 = \App\Models\User::factory()->create(['role' => 'teacher']);
+
+        $this->actingAs($userTeacher2)
+        ->delete(route('classrooms.unassingstudent',$classroom->id),[
+            'student_email' => $studentEmail
+        ])->assertForbidden();
+
+        $this->assertEquals(1, $classroom->students()->count());
+    }
+
+    public function test_teacher_unassing_students_to_a_own_classroom()
+    {
+        $userTeacher = \App\Models\User::factory()->create(['role' => 'teacher']);
+
+        $classroom = \App\Models\Classroom::factory()->create([
+            'user_id' => $userTeacher->id
+        ]);
+
+        $studentEmail = \App\Models\User::factory()->create()->email;
+
+        $classroom->assingStudents([$studentEmail]);
+
+
+        $this->actingAs($userTeacher)
+        ->delete(route('classrooms.unassingstudent',$classroom->id),[
+            'student_email' => $studentEmail
+        ])->assertOk();
+
+        $this->assertEquals(0, $classroom->students()->count());
+    }
 }

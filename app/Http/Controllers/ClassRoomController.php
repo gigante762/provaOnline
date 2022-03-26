@@ -89,4 +89,14 @@ class ClassRoomController extends Controller
     {
         //
     }
+
+    public function assingStudent(Request $request, Classroom $classroom)
+    {
+        $classroom->assingStudents([$request->student_email]);
+    }
+
+    public function unAssingStudent(Request $request, Classroom $classroom)
+    {
+        $classroom->unAssingStudents($request->student_email);
+    }
 }

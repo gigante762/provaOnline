@@ -23,4 +23,11 @@ Route::get('/', function () {
 });
 
 Route::resource('classrooms', ClassRoomController::class);
+
+Route::post('/classrooms/{classroom}/assingstudent', [ClassRoomController::class, 'assingStudent'])
+->name('classrooms.assingstudent')->can('update', 'classroom');
+
+Route::delete('/classrooms/{classroom}/assingstudent', [ClassRoomController::class, 'unassingStudent'])
+->name('classrooms.unassingstudent')->can('update', 'classroom');
+
 Route::resource('exams', ExamController::class);

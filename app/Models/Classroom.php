@@ -34,7 +34,6 @@ class Classroom extends Model
         
     }
 
-
     /**
      * Receive an email and remove this students from the classroom
      */
