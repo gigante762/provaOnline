@@ -21,7 +21,7 @@ class ClassRoomController extends Controller
      */
     public function index()
     {
-        
+        return Classroom::with('students')->get();
     }
 
     /**
