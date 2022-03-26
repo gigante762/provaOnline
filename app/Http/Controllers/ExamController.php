@@ -10,7 +10,7 @@ class ExamController extends Controller
 
     public function __construct()
     {
-        $this->authorizeResource(Exam::class, 'exams');
+        //$this->authorizeResource(Exam::class, 'exams');
     }
     /**
      * Display a listing of the resource.
@@ -51,7 +51,7 @@ class ExamController extends Controller
      */
     public function show(Exam $exam)
     {
-        //
+        return $exam;
     }
 
     /**

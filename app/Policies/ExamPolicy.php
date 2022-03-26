@@ -6,6 +6,7 @@ use App\Models\Exam;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+
 class ExamPolicy
 {
     use HandlesAuthorization;
@@ -18,7 +19,7 @@ class ExamPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        
     }
 
     /**
@@ -30,7 +31,23 @@ class ExamPolicy
      */
     public function view(User $user, Exam $exam)
     {
-        //
+        
+    }
+
+    /**
+     * Determine whether the user can view the model.
+     *
+     * @param  \App\Models\User  $user
+     * @param  \App\Models\Exam  $exam
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function viewExam(User $user, Exam $exam)
+    {
+
+        
+        return $exam->user_id == $user->id || $user->examsAvailables->contains(function ($value, $key) use ($exam) {
+            return $value->exam_id = $exam->id;
+        });
     }
 
     /**
@@ -41,7 +58,7 @@ class ExamPolicy
      */
     public function create(User $user)
     {
-        return $user->role === 'teacher';
+        return $user->role == 'teacher';
     }
 
     /**

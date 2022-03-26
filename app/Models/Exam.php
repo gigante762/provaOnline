@@ -16,7 +16,6 @@ class Exam extends Model
         'close_at' => 'date'
     ];
 
-
     public function user()
     {
         return $this->belongsTo(User::class);

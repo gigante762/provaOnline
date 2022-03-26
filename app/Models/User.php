@@ -56,6 +56,11 @@ class User extends Authenticatable
         ->withPivot('answers', 'opened_at', 'closed_at', 'uuid');
     }
 
+    public function scopeExamsOpeneds($query)
+    {
+        return $query->whereDate(now(),'>=','open_at');
+    }
+
     public function applyExamToClassroom(Exam $exam, Classroom $classroom)
     {
         AssingExamToClassroom::dispatch($exam, $classroom);

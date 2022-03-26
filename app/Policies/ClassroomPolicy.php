@@ -5,21 +5,11 @@ namespace App\Policies;
 use App\Models\Classroom;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Auth\Access\Response;
 
 class ClassroomPolicy
 {
     use HandlesAuthorization;
-
-    /**
-     * Determine whether the user can view any models.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function viewAny(User $user)
-    {
-        //
-    }
 
     /**
      * Determine whether the user can view the model.
@@ -30,7 +20,7 @@ class ClassroomPolicy
      */
     public function view(User $user, Classroom $classroom)
     {
-        //
+        
     }
 
     /**
@@ -41,7 +31,7 @@ class ClassroomPolicy
      */
     public function create(User $user)
     {
-        return $user->role === 'teacher';
+        return $user->role == 'teacher';
     }
 
     /**

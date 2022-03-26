@@ -10,6 +10,11 @@ class ClassroomTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_students_index_view()
+    {
+        $this->get(route('classrooms.index'))->assertOk();
+    }
+
     public function test_students_cant_create_classroms()
     {
         $userStudent = \App\Models\User::factory()->create();

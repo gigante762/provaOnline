@@ -11,7 +11,7 @@ class ClassRoomController extends Controller
 
     public function __construct()
     {
-        $this->authorizeResource(Classroom::class, 'classrooms');
+        
     }
 
     /**
@@ -21,7 +21,7 @@ class ClassRoomController extends Controller
      */
     public function index()
     {
-        //
+        
     }
 
     /**

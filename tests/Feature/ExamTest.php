@@ -112,7 +112,7 @@ class ExamTest extends TestCase
         $this->assertDatabaseCount('exam_user', 3);
     }
 
-    public function test_student_exam_have_uuid()   
+    public function test_student_exam_have_uuid()
     {
         $teacher = \App\Models\User::factory()
         ->has(\App\Models\Exam::factory())
@@ -137,5 +137,58 @@ class ExamTest extends TestCase
         $this->assertEquals(1, $student->examsAvailables()->count());
 
         $this->assertNotEmpty($student->examsAvailables()->first()->pivot->uuid, 'exam_user uuid is null');
+    }
+
+    /**
+     * @depends test_student_exam_have_uuid
+     */
+    public function test_student_can_view_their_own_exam()
+    {
+
+        $teacher = \App\Models\User::factory()
+        ->has(\App\Models\Exam::factory())
+        ->has(\App\Models\Classroom::factory())
+        ->create(['role'=>'teacher']);
+
+        $exam = $teacher->exams()->first();
+        $classroom = $teacher->classrooms()->first();
+        $student = \App\Models\User::factory()->create();
+        $classroom->assingStudents($student->email);
+        $teacher->applyExamToClassroom($exam, $classroom);
+
+
+        // use the uuid instead
+        $examToDo = $student->examsAvailables()->first();
+
+        $this->actingAs($student)
+        ->get(route('exams.show', $examToDo->id))
+        ->assertOk();
+
+
+
+    }
+
+    public function test_student_cant_view_their_non_own_exam()
+    {
+        $teacher = \App\Models\User::factory()
+        ->has(\App\Models\Exam::factory())
+        ->has(\App\Models\Classroom::factory())
+        ->create(['role'=>'teacher']);
+
+        $exam = $teacher->exams()->first();
+        $classroom = $teacher->classrooms()->first();
+        $student = \App\Models\User::factory()->create();
+        $classroom->assingStudents($student->email);
+        $teacher->applyExamToClassroom($exam, $classroom);
+
+
+        $examToDo = $student->examsAvailables()->first();
+
+        $student2 = \App\Models\User::factory()->create();
+
+        $this->actingAs($student2)
+        ->get(route('exams.show', $examToDo->id))
+        ->assertForbidden();
+
     }
 }
