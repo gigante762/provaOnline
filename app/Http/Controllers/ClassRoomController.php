@@ -11,7 +11,6 @@ class ClassRoomController extends Controller
 
     public function __construct()
     {
-        
     }
 
     /**
@@ -31,7 +30,6 @@ class ClassRoomController extends Controller
      */
     public function create()
     {
-        
     }
 
     /**
@@ -42,7 +40,12 @@ class ClassRoomController extends Controller
      */
     public function store(Request $request)
     {
-        Classroom::create($request->all());
+        Classroom::create([
+            'user_id' => $request->user()->id,
+            'name' => $request->name,
+        ]);
+
+        return redirect('classroom.index');
     }
 
     /**
@@ -92,11 +95,15 @@ class ClassRoomController extends Controller
 
     public function assingStudent(Request $request, Classroom $classroom)
     {
-        $classroom->assingStudents([$request->student_email]);
+        
+        $classroom->assingStudents($request->emails);
+        return redirect()->back();
+
     }
 
     public function unAssingStudent(Request $request, Classroom $classroom)
     {
-        $classroom->unAssingStudents($request->student_email);
+        $classroom->unAssingStudents($request->emails);
+        return redirect()->back();
     }
 }
