@@ -39,16 +39,14 @@ class ExamPolicy
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Exam  $exam
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function viewExamUuid(User $user)
     {
-        $exam = request()->route('examuuid');
-
-        return $exam->user_id == $user->id || $user->examsAvailables->contains(function ($value, $key) use ($exam) {
-            return $value->exam_id = $exam->id;
-        });
+        $exam = request()->examuuid;
+        
+        /* Se a prova for para esse user, open_at <= now() <= close_at */
+        return $exam->user_id == $user->id && $exam->exam->open_at->lte(now()) && $exam->exam->close_at->gte(now());
     }
 
     /**

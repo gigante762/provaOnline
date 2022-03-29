@@ -20,8 +20,8 @@ class CreateExamUserTable extends Migration
             $table->foreignId('exam_id')->constrained('exams')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users');
             $table->text('answers')->nullable();
-            $table->date('opened_at')->default(Carbon::createFromDate(0, 0, 0));
-            $table->date('closed_at')->default(Carbon::createFromDate(0, 0, 0));
+            $table->date('opened_at')->nullable();
+            $table->date('closed_at')->nullable();
             $table->timestamps();
         });
     }

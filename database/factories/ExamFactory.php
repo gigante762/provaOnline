@@ -18,7 +18,7 @@ class ExamFactory extends Factory
             'title' => 'Exame '.rand(0,1000),
             'content' => $this->faker->text,
             'open_at' => now(),
-            'close_at' => now()->addDay(rand(1,20)),
+            'close_at' => now()->addDay(rand(1,7)),
             'minutes' => rand(3,10),
         ];
     }

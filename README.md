@@ -14,6 +14,12 @@ Implementar a função do professor enviar a prova para os alunos. (não farei v
 
     Cada aluno vai pegar as suas avalições disponíveis para realizar tipo `$user->examsAvailables()` e dai isso será jogado para um view para então no momento que ele acessar o exame, disparar o inicio da prova e todo o restante.
 
+    - [ ] Quando o aluno abrir a prova setar tempo de abertura
+    - [ ] Uma vez aberta a prova as regras do tempo devem valer
+    - [ ] Prova disponível para ver apenas dentro do prazo estipulado.
+    - [ ] Caso 
+
+
     Quando o aluno clicar em 'iniciar exame' disparar um post que vai setar o inicio do exame. (seria interessante fazer um autosave de cada resposta, caso o tempo acabe alternativas marcadas já estariam salvas, talvez usando livewire para fazer o bind)
 
     Para o professor ele vai pegar todos os exames também, e a `show` de cada turma mostrará os alunos que já fizeram a prova e os alunos que ainda não entregaram.

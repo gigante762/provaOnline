@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Jobs\AssingExamToClassroom;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Bus;
 use Tests\TestCase;
 
@@ -150,7 +151,6 @@ class ExamTest extends TestCase
      */
     public function test_student_can_view_their_own_exam()
     {
-
         $teacher = \App\Models\User::factory()
         ->has(\App\Models\Exam::factory())
         ->has(\App\Models\Classroom::factory())
@@ -167,6 +167,8 @@ class ExamTest extends TestCase
         // use the uuid instead
         $examToDo = $student->examsAvailables()->first();
 
+        $this->withExceptionHandling();
+        
         $this->actingAs($student)
         ->get(route('exams.show', $examToDo->pivot->uuid))
         ->assertSuccessful();
@@ -174,7 +176,51 @@ class ExamTest extends TestCase
         $this->actingAs($student2)
         ->get(route('exams.show', $examToDo->pivot->uuid))
         ->assertForbidden();
+    }
 
+    public function test_block_exam_acess_when_is_not_the_date()
+    {
+        $teacher = \App\Models\User::factory()
+        ->has(\App\Models\Classroom::factory())
+        ->create(['role'=>'teacher']);
+
+        $exam = \App\Models\Exam::factory()->create([
+            'user_id' => $teacher->id,
+            'open_at' => '2022-03-29',
+            'close_at' => '2022-03-31',
+        ]);
+
+
+        $classroom = $teacher->classrooms()->first();
+        $student = \App\Models\User::factory()->create();
+        $classroom->assingStudents($student->email);
+        $teacher->applyExamToClassroom($exam, $classroom);
+        // use the uuid instead
+        $examToDo = $student->examsAvailables()->first();
+
+        $this->actingAs($student);
+
+        Carbon::setTestNow('2022-03-28');
+        $this->get(route('exams.show', $examToDo->pivot->uuid))
+        ->assertForbidden();
+
+        Carbon::setTestNow('2022-03-29');
+        $this->get(route('exams.show', $examToDo->pivot->uuid))
+        ->assertSuccessful();
+
+        Carbon::setTestNow('2022-03-30');
+        $this->get(route('exams.show', $examToDo->pivot->uuid))
+        ->assertSuccessful();
+
+        Carbon::setTestNow('2022-03-31');
+        $this->get(route('exams.show', $examToDo->pivot->uuid))
+        ->assertSuccessful();
+
+        Carbon::setTestNow('2022-04-01');
+        $this->get(route('exams.show', $examToDo->pivot->uuid))
+        ->assertForbidden();
 
     }
+
+
 }

@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use App\Models\{
     Classroom,
-    Exam
+    Exam,
 };
 use App\Policies\{
     ClassroomPolicy,
