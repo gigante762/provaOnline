@@ -161,7 +161,7 @@ class ExamTest extends TestCase
         $examToDo = $student->examsAvailables()->first();
 
         $this->actingAs($student)
-        ->get(route('exams.show', $examToDo->id))
+        ->get(route('exams.show', $examToDo->pivot->uuid))
         ->assertOk();
 
 
@@ -187,7 +187,7 @@ class ExamTest extends TestCase
         $student2 = \App\Models\User::factory()->create();
 
         $this->actingAs($student2)
-        ->get(route('exams.show', $examToDo->id))
+        ->get(route('exams.show', $examToDo->pivot->uuid))
         ->assertForbidden();
 
     }

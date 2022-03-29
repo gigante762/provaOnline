@@ -24,7 +24,7 @@ Route::get('/', function () {
 
 //Route::resource('classrooms', ClassRoomController::class);
 
-Route::prefix('/classrooms')->group(function(){
+Route::prefix('/classrooms')->middleware(['auth'])->group(function(){
     Route::post('/', [ClassRoomController::class,'store'])->name('classrooms.store')->can('create','App\Models\Classroom');
     Route::get('/', [ClassRoomController::class,'index'])->name('classrooms.index');
     Route::get('/{classroom}', [ClassRoomController::class,'show'])->name('classrooms.show');
@@ -39,9 +39,9 @@ Route::prefix('/classrooms')->group(function(){
 
 //Route::resource('exams', ExamController::class);
 
-Route::prefix('/exams')->group(function(){
+Route::prefix('/exams')->middleware(['auth'])->group(function(){
     Route::post('/',[ExamController::class,'store'])->name('exams.store')->can('create','App\Models\Exam');
-    Route::get('/{exam}',[ExamController::class,'show'])->name('exams.show')->can('viewExam','exam');
+    Route::get('/{examuuid}',[ExamController::class,'show'])->name('exams.show')->can('viewExamUuid','App\Models\Exam');
 });
 
 Route::get('/dashboard', function () {

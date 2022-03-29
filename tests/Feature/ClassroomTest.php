@@ -12,7 +12,10 @@ class ClassroomTest extends TestCase
 
     public function test_students_index_view()
     {
-        $this->get(route('classrooms.index'))->assertOk();
+        $userStudent = \App\Models\User::factory()->create();
+        
+        $this->actingAs($userStudent)
+        ->get(route('classrooms.index'))->assertSuccessful();
     }
 
     public function test_students_cant_create_classroms()

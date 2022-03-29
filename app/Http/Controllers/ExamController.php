@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Exam;
+use App\Models\ExamUser;
 use Illuminate\Http\Request;
 
 class ExamController extends Controller
@@ -49,7 +50,7 @@ class ExamController extends Controller
      * @param  \App\Models\Exam  $exam
      * @return \Illuminate\Http\Response
      */
-    public function show(Exam $exam)
+    public function show(ExamUser $exam)
     {
         return $exam;
     }

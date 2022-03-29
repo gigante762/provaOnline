@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Models\Exam;
+use App\Models\ExamUser;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -41,8 +42,9 @@ class ExamPolicy
      * @param  \App\Models\Exam  $exam
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewExam(User $user, Exam $exam)
+    public function viewExamUuid(User $user)
     {
+        $exam = request()->route('examuuid');
 
         return $exam->user_id == $user->id || $user->examsAvailables->contains(function ($value, $key) use ($exam) {
             return $value->exam_id = $exam->id;
