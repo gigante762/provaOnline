@@ -38,6 +38,9 @@ class AssingExamToClassroom implements ShouldQueue
      */
     public function handle()
     {
+
+        // it could send an email for eache user
+        
         foreach ($this->classroom->students as $student) {
             $exam = $student->examsAvailables()->attach($this->exam->id, ['uuid' => Str::uuid()]);
         }

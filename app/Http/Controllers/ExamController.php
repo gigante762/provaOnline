@@ -41,7 +41,9 @@ class ExamController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->all();
+        $data['user_id'] = $request->user()->id;
+        Exam::create($data);
     }
 
     /**

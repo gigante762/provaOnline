@@ -9,7 +9,7 @@ class Exam extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title','user_id','content','open_at','close_at'];
+    protected $fillable = ['title','user_id','content','open_at','close_at', 'minutes'];
 
     protected $casts = [
         'open_at' => 'date',

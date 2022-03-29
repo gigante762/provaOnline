@@ -24,20 +24,28 @@ class ExamTest extends TestCase
             'close_at' => now()->addDay(rand(1,20)),
             'minutes' => rand(3,10),
         ])->assertForbidden();
+
+        $this->assertDatabaseCount('exams', 0);
     }
 
     public function test_teacher_can_create_exams_from_post()
     {
-        $userTeacher = \App\Models\User::factory()->create(['role' => 'teacher']);
+        $teacher = \App\Models\User::factory()->create(['role' => 'teacher']);
 
-        $this->actingAs($userTeacher)
+        $this->actingAs($teacher)
         ->post(route('exams.store'), [
-            'title' => 'Exame '.rand(0,1000),
+            'title' => 'Exame to test 51',
             'content' => 'some content',
             'open_at' => now(),
             'close_at' => now()->addDay(rand(1,20)),
             'minutes' => rand(3,10),
-        ])->assertOk();
+        ]);
+
+        $this->assertDatabaseHas('exams',[
+            'user_id' => $teacher->id,
+            'title' => 'Exame to test 51',
+            'content' => 'some content',
+        ]);
 
     }
 
@@ -54,7 +62,7 @@ class ExamTest extends TestCase
         $this->assertDatabaseCount('exams', 3);
     }
 
-    public function test_dispatch_assing_exam_to_classroom_job()   
+    public function test_dispatch_assing_exam_to_classroom_job()
     {
         Bus::fake();
 
@@ -71,7 +79,6 @@ class ExamTest extends TestCase
         $studentsEmails[] = \App\Models\User::factory()->create()->email;
         $studentsEmails[] = \App\Models\User::factory()->create()->email;
         $studentsEmails[] = \App\Models\User::factory()->create()->email;
-
         
         $classroom->assingStudents($studentsEmails);
         
@@ -81,7 +88,7 @@ class ExamTest extends TestCase
 
     }
 
-    public function test_students_received_exam_to_do()   
+    public function test_students_received_exam_to_do()
     {
         $teacher = \App\Models\User::factory()
         ->has(\App\Models\Exam::factory())
@@ -93,19 +100,18 @@ class ExamTest extends TestCase
         $classroom = $teacher->classrooms()->first();
 
         $studentsEmails = [];
-        $studentsEmails[] = \App\Models\User::factory()->create()->email;
-        $studentsEmails[] = \App\Models\User::factory()->create()->email;
-        $studentsEmails[] = \App\Models\User::factory()->create()->email;
-
         
+        $studentsEmails[] = \App\Models\User::factory()->create()->email;
+        $studentsEmails[] = \App\Models\User::factory()->create()->email;
+        $student = \App\Models\User::factory()->create();
+        $studentsEmails[] =  $student->email;
+
         $classroom->assingStudents($studentsEmails);
         
         $teacher->applyExamToClassroom($exam, $classroom);
 
-        $studentExemple = \App\Models\User::where('email', $studentsEmails[0])->first();
-
         $this->assertDatabaseHas('exam_user', [
-            'user_id'  => $studentExemple->id,
+            'user_id'  => $student->id,
             'exam_id' => $exam->id,
         ]);
 
@@ -153,6 +159,7 @@ class ExamTest extends TestCase
         $exam = $teacher->exams()->first();
         $classroom = $teacher->classrooms()->first();
         $student = \App\Models\User::factory()->create();
+        $student2 = \App\Models\User::factory()->create();
         $classroom->assingStudents($student->email);
         $teacher->applyExamToClassroom($exam, $classroom);
 
@@ -162,33 +169,12 @@ class ExamTest extends TestCase
 
         $this->actingAs($student)
         ->get(route('exams.show', $examToDo->pivot->uuid))
-        ->assertOk();
-
-
-
-    }
-
-    public function test_student_cant_view_their_non_own_exam()
-    {
-        $teacher = \App\Models\User::factory()
-        ->has(\App\Models\Exam::factory())
-        ->has(\App\Models\Classroom::factory())
-        ->create(['role'=>'teacher']);
-
-        $exam = $teacher->exams()->first();
-        $classroom = $teacher->classrooms()->first();
-        $student = \App\Models\User::factory()->create();
-        $classroom->assingStudents($student->email);
-        $teacher->applyExamToClassroom($exam, $classroom);
-
-
-        $examToDo = $student->examsAvailables()->first();
-
-        $student2 = \App\Models\User::factory()->create();
+        ->assertSuccessful();
 
         $this->actingAs($student2)
         ->get(route('exams.show', $examToDo->pivot->uuid))
         ->assertForbidden();
+
 
     }
 }
